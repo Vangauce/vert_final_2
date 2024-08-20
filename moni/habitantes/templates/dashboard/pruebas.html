@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gráfico de pH con Desviación Estándar</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.0.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    
+</head>
+<body>
+    <h1>Gráfico de pH con Desviación Estándar</h1>
+    <form action="" method="POST">
+        {% csrf_token %}
+        <input type="text" id="fecha_inicio" name="fecha_inicio" placeholder="Fecha de inicio">
+        <input type="text" id="fecha_fin" name="fecha_fin" placeholder="Fecha de fin">
+        <button type="submit">Actualizar Gráfico</button>
+    </form>
+
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+
+    <script>
+        flatpickr("#fecha_inicio", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i:S",
+        });
+        flatpickr("#fecha_fin", {
+            enableTime: true,
+            dateFormat: "Y-m-d H:i:S",
+        });
+    
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ fechas|safe }},
+                datasets: [
+                    {
+                        label: 'Promedio de pH',
+                        backgroundColor: 'rgb(255, 99, 132)',
+                        borderColor: 'rgb(255, 99, 132)',
+                        data: {{ ph_vals|safe }},
+                        fill: false
+                    },
+                    {
+                        label: 'Desviación estándar de pH',
+                        backgroundColor: 'rgb(54, 162, 235)',
+                        borderColor: 'rgb(54, 162, 235)',
+                        data: {{ ph_stddevs|safe }},
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                },
+                plugins: {
+                    annotation: {
+                        annotations: {
+                            // Configuración de anotaciones si se requiere
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+    
+
+
+</body>
+</html>
